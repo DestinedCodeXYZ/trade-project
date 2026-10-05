@@ -1,0 +1,69 @@
+import { useState } from 'react'
+import './App.css'
+import type { Candle } from './types/Candle'
+
+function App() {
+
+  const [instrument, setInstrument] = useState("eurusd");
+  const [timeframe, setTimeframe] = useState("h1");
+  const [limit, setLimit] = useState(100);
+  const [candles, setCandles] = useState<Candle[]>([]);
+
+
+  const url = `http://localhost:3030/api/candles?instrument=${instrument}&timeframe=${timeframe}&limit=${limit}`;
+  async function fetchData() {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data: Candle[] = await response.json();
+      console.log(data);
+      setCandles(data);
+
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
+
+  return (
+    <>
+    <div>
+    <h1>Market Data Explorer</h1>
+    </div> 
+    <div>
+      <p>Limit: 
+        <input 
+        type="number"
+        value={limit}
+        onChange={(e) => setLimit(Number(e.target.value))}
+        placeholder="Enter limit"
+        />
+      </p> 
+      
+      <p>Instrument: <input 
+        type="text" 
+        value={instrument} 
+        onChange={(e) => setInstrument(e.target.value)} 
+        placeholder="Enter instrument"
+      />
+      </p>
+      
+      <p>
+      Timeframe: <input 
+        type="text" 
+        value={timeframe} 
+        onChange={(e) => setTimeframe(e.target.value)} 
+        placeholder="Enter timeframe"
+      />
+      </p>
+
+      <button onClick={fetchData}>Fetch Data</button>
+      <p>Candles: {candles.length}</p>
+    </div>
+    </>
+  )
+} 
+
+export default App

@@ -89,8 +89,6 @@ router.get("/", async (req, res) => {
             }
         }
 
-
-
         let queryLimit = 100;
         let queryCap = 1000;
 
