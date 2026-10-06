@@ -2,9 +2,11 @@ import mongoose from "mongoose";
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import candleRoutes from "./routes/candleRoutes.js";
 
-dotenv.config();
+dotenv.config({ path: resolve(dirname(fileURLToPath(import.meta.url)), "../../.env") });
 
 const app = express();
 
@@ -25,7 +27,12 @@ app.use("/api/candles", candleRoutes);
 app.use(express.json());
 
 async function startServer() {
-    await mongoose.connect(process.env.DB_URI!);
+    const databaseUri = process.env.DB_URI;
+    if (!databaseUri) {
+        throw new Error("DB_URI is not configured in the repository-root .env file.");
+    }
+
+    await mongoose.connect(databaseUri);
     console.log("Connected to MongoDB!");
     console.log("Database:", mongoose.connection.name);
 
