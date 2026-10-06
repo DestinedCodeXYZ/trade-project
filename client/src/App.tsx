@@ -6,11 +6,29 @@ function App() {
 
   const [instrument, setInstrument] = useState("eurusd");
   const [timeframe, setTimeframe] = useState("h1");
+  const [from, setFrom] = useState<Date>(new Date("2023-01-01"));
+  const [to, setTo] = useState<Date>(new Date("2023-02-01"));
   const [limit, setLimit] = useState(100);
   const [candles, setCandles] = useState<Candle[]>([]);
 
 
-  const url = `http://localhost:3030/api/candles?instrument=${instrument}&timeframe=${timeframe}&limit=${limit}`;
+  const url = new URL(`http://localhost:3030/api/candles`);
+  url.searchParams.set("instrument", instrument);
+  url.searchParams.set("timeframe", timeframe);
+
+
+  if (limit) {
+    url.searchParams.set("limit", limit.toString());
+  }
+
+  if (from) {
+    url.searchParams.set("from", from.toString())
+  }
+
+  if (to) {
+    url.searchParams.set("to", to.toString())
+  }
+
   async function fetchData() {
     try {
       const response = await fetch(url);
@@ -34,7 +52,7 @@ function App() {
     </div> 
     <div>
       <p>Limit: 
-        <input 
+        <input  
         type="number"
         value={limit}
         onChange={(e) => setLimit(Number(e.target.value))}
@@ -50,13 +68,30 @@ function App() {
       />
       </p>
       
-      <p>
-      Timeframe: <input 
+      <p className='base'>Timeframe: <input 
         type="text" 
         value={timeframe} 
         onChange={(e) => setTimeframe(e.target.value)} 
         placeholder="Enter timeframe"
       />
+      </p>
+
+      <p className='base'>From: 
+        <input 
+          type="date" 
+          value={from.toISOString().slice(0, 10)} 
+          onChange={(e) => setFrom(new Date(e.target.value))} 
+          placeholder="Enter 'from' date"
+        />
+      </p>
+
+      <p className='base'>To: 
+        <input
+          type="date" 
+          value={to.toISOString().slice(0, 10)} 
+          onChange={(e) => setTo(new Date(e.target.value))} 
+          placeholder="Enter 'to' date"
+        />
       </p>
 
       <button onClick={fetchData}>Fetch Data</button>
