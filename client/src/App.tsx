@@ -1,8 +1,8 @@
-import { Component } from 'react';
 import { useState } from 'react'
 import './App.css'
 import type { Candle } from './types/Candle'
-
+import CandleList from './components/CandleList';
+import Filters from './components/Filters';
 
 function App() {
 
@@ -17,71 +17,6 @@ function App() {
   const url = new URL(`http://localhost:3030/api/candles`);
   url.searchParams.set("instrument", instrument);
   url.searchParams.set("timeframe", timeframe);
-
-  class Filters extends Component {
-  render() {
-    return (
-      <div>
-        <p>Limit: 
-          <input  
-          type="number"
-          value={limit}
-          onChange={(e) => setLimit(Number(e.target.value))}
-          placeholder="Enter limit"
-          />
-      </p> 
-      
-      <p>Instrument: <input 
-        type="text" 
-        value={instrument} 
-        onChange={(e) => setInstrument(e.target.value)} 
-        placeholder="Enter instrument"
-      />
-      </p>
-      
-      <p className='base'>Timeframe: <input 
-        type="text" 
-        value={timeframe} 
-        onChange={(e) => setTimeframe(e.target.value)} 
-        placeholder="Enter timeframe"
-      />
-      </p>
-
-      <p className='base'>From: 
-        <input 
-          type="datetime-local" 
-          value={from.slice(0, 16)} 
-          onChange={(e) => setFrom(e.target.value)} 
-          placeholder="2023-01-01T00:00"
-        />
-      </p>
-
-      <p className='base'>To: 
-        <input
-          type="datetime-local" 
-          value={to.slice(0, 16)} 
-          onChange={(e) => setTo(e.target.value)} 
-          placeholder="2023-02-01T00:00"
-        />
-      </p>
-      </div>
-    )
-  }
-}
-
-  class CandleList extends Component<{ candles: Candle[] }> {
-    render() {
-      return (
-        <ul>
-        {candles.map((candle) => (
-          <li key={candle._id}>
-            {candle.timestamp} - Open: {candle.open}, High: {candle.high}, Low: {candle.low}, Close: {candle.close}, Volume: {candle.volume}
-          </li>
-        ))}
-      </ul>
-      )
-    }
-  }
 
   if (limit) {
     url.searchParams.set("limit", limit.toString());
@@ -117,14 +52,29 @@ function App() {
     <h1>Market Data Explorer</h1>
     </div> 
     <div>
-      <Filters />
+      <p>
+        {
+          Filters({
+            instrument,
+            timeframe,
+            from,
+            to,
+            limit,
+            onInstrumentChange: setInstrument,
+            onTimeframeChange: setTimeframe,
+            onFromChange: setFrom,
+            onToChange: setTo,
+            onLimitChange: setLimit
+          })
+        }
+        </p> 
 
       <button onClick={fetchData}>Fetch Data</button>
       <p>Candles: {candles.length}</p>
 
     </div>
     <div>
-      <CandleList candles={candles} />
+      <p>View candles below: {CandleList({candles})}</p>
     </div>
     </>
   )
