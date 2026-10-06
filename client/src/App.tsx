@@ -6,8 +6,8 @@ function App() {
 
   const [instrument, setInstrument] = useState("eurusd");
   const [timeframe, setTimeframe] = useState("h1");
-  const [from, setFrom] = useState<Date>(new Date("2023-01-01"));
-  const [to, setTo] = useState<Date>(new Date("2023-02-01"));
+  const [from, setFrom] = useState(new Date("2023-01-01"));
+  const [to, setTo] = useState(new Date("2023-02-01"));
   const [limit, setLimit] = useState(100);
   const [candles, setCandles] = useState<Candle[]>([]);
 
@@ -22,11 +22,11 @@ function App() {
   }
 
   if (from) {
-    url.searchParams.set("from", from.toString())
+    url.searchParams.set("from", from.toISOString())
   }
 
   if (to) {
-    url.searchParams.set("to", to.toString())
+    url.searchParams.set("to", to.toISOString())
   }
 
   async function fetchData() {
@@ -78,19 +78,19 @@ function App() {
 
       <p className='base'>From: 
         <input 
-          type="date" 
-          value={from.toISOString().slice(0, 10)} 
+          type="datetime-local" 
+          value={from.toISOString().slice(0, 16)} 
           onChange={(e) => setFrom(new Date(e.target.value))} 
-          placeholder="Enter 'from' date"
+          placeholder="2023-01-01T00:00"
         />
       </p>
 
       <p className='base'>To: 
         <input
-          type="date" 
-          value={to.toISOString().slice(0, 10)} 
+          type="datetime-local" 
+          value={to.toISOString().slice(0, 16)} 
           onChange={(e) => setTo(new Date(e.target.value))} 
-          placeholder="Enter 'to' date"
+          placeholder="2023-02-01T00:00"
         />
       </p>
 
