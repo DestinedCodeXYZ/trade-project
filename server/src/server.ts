@@ -1,12 +1,18 @@
 import mongoose from "mongoose";
 import express from "express";
 import dotenv from "dotenv";
-
+import cors from "cors";
 import candleRoutes from "./routes/candleRoutes.js";
 
 dotenv.config();
 
 const app = express();
+
+app.use(cors({
+    origin: "*", // Allow all origins for development; adjust in production
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+}));
 
 app.use((req, res, next) => {
     console.log(`${new Date().toISOString()}: ${req.method} ${req.url}`);
