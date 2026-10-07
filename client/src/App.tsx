@@ -4,6 +4,7 @@ import type { Candle } from './types/Candle'
 import CandleList from './components/CandleList';
 import Filters from './components/Filters';
 import fetchData from './functions/fetchData';
+import Loading from './components/Loading';
 
 function App() {
 
@@ -13,7 +14,8 @@ function App() {
   const [to, setTo] = useState("2023-02-01T00:00");
   const [limit, setLimit] = useState(100);
   const [candles, setCandles] = useState<Candle[]>([]);
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const url = new URL(`http://localhost:3030/api/candles`);
   url.searchParams.set("instrument", instrument);
@@ -31,9 +33,26 @@ function App() {
     url.searchParams.set("to", to)
   }
 
+  async function loadCandles() {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const data = await fetchData(url.toString());
+      setCandles(data);
+
+    } catch (error) {
+      console.log(`ERROR: ${error}`)
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {setError("An unknown error occurred.")}
+
+    } finally { setIsLoading(false) }
+  }
+
   useEffect(() => {
-    fetchData(url.toString(), setCandles);
-  }, [instrument, timeframe, from, to, limit]);
+    loadCandles();
+  }, []);
 
   return (
     <>
@@ -41,29 +60,26 @@ function App() {
     <h1>Market Data Explorer</h1>
     </div> 
     <div>
-      <p>
-        {
-          Filters({
-            instrument,
-            timeframe,
-            from,
-            to,
-            limit,
-            onInstrumentChange: setInstrument,
-            onTimeframeChange: setTimeframe,
-            onFromChange: setFrom,
-            onToChange: setTo,
-            onLimitChange: setLimit
-          })
-        }
-        </p> 
+      <Filters
+        instrument={instrument}
+        timeframe={timeframe}
+        from={from}
+        to={to}
+        limit={limit}
+        onInstrumentChange={setInstrument}
+        onTimeframeChange={setTimeframe}
+        onFromChange={setFrom}
+        onToChange={setTo}
+        onLimitChange={setLimit}  
+      /> 
 
-      <button onClick={() => fetchData(url.toString(), setCandles)}>Load Candles</button>
+      <button onClick={() => loadCandles()}>Load Candles</button>
+      <br/>
       <p>Candles: {candles.length}</p>
-
     </div>
     <div>
-      <p>View candles below: {CandleList({candles})}</p>
+      <p>View candles below: </p>
+        {isLoading ? <Loading /> : error ? <p> {error} </p> : <CandleList candles={candles} />}
     </div>
     </>
   )
