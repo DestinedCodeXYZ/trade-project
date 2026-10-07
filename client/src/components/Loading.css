@@ -1,0 +1,14 @@
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.loading-spinner {
+  border: 8px solid #2e23c4; /* Light grey */
+  border-top: 8px solid #2e23c4; /* Blue */
+  border-radius: 80%;
+  width: 60vh;
+  height: 60vh;
+}
