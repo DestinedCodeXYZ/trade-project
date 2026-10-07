@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 import type { Candle } from './types/Candle'
 import CandleList from './components/CandleList';
 import Filters from './components/Filters';
+import fetchData from './functions/fetchData';
 
 function App() {
 
@@ -30,21 +31,9 @@ function App() {
     url.searchParams.set("to", to)
   }
 
-  async function fetchData() {
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data: Candle[] = await response.json();
-      console.log(data);
-      setCandles(data);
-
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  }
+  useEffect(() => {
+    fetchData(url.toString(), setCandles);
+  }, [instrument, timeframe, from, to, limit]);
 
   return (
     <>
@@ -69,7 +58,7 @@ function App() {
         }
         </p> 
 
-      <button onClick={fetchData}>Fetch Data</button>
+      <button onClick={() => fetchData(url.toString(), setCandles)}>Load Candles</button>
       <p>Candles: {candles.length}</p>
 
     </div>

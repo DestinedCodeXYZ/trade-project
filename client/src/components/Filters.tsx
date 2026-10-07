@@ -4,7 +4,7 @@ export default function Filters({instrument, timeframe, from, to, limit, onInstr
 
         return (
         <div>
-            <p>Limit: 
+            <p>Limit:  
             <input  
             type="number"
             value={limit}
