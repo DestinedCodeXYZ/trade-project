@@ -90,7 +90,7 @@ router.get("/", async (req, res) => {
         }
 
         let queryLimit = 100;
-        let queryCap = 1000;
+        let queryCap = 10000;
 
         // Checking limit parameter and validating it
         if (limit) {

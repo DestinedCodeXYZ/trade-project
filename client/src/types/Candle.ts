@@ -1,5 +1,5 @@
 export interface Candle {
-    id_: string;
+    _id: string;
     timestamp: string;
     instrument: string;
     priceSide: string;
